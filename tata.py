@@ -683,41 +683,41 @@ MONTHS = {
     "dec": 12,
 }
 
-
 def parse_date(filename):
 
-    name = filename.lower()
+    name = os.path.basename(filename)
 
-    # Look for the actual month name first
     m = re.search(
-        r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[-_ ]+(\d{4})",
-        name
+        r"Website_Report[_\-\s]+([A-Za-z]+)[_\-\s]+(\d{4})",
+        name,
+        re.IGNORECASE
     )
 
-    if m:
+    if not m:
+        return datetime.min
 
-        return datetime(
-            int(m.group(2)),
-            MONTHS[m.group(1)],
-            1
-        )
+    month = m.group(1).lower()
+    year = int(m.group(2))
 
-    # Fallback: YYYY-MM
-    m = re.search(
-        r"(\d{4})[-_](\d{2})",
-        name
-    )
+    month_map = {
+        "january": 1,
+        "february": 2,
+        "march": 3,
+        "april": 4,
+        "may": 5,
+        "june": 6,
+        "july": 7,
+        "august": 8,
+        "september": 9,
+        "october": 10,
+        "november": 11,
+        "december": 12,
+    }
 
-    if m:
+    if month not in month_map:
+        return datetime.min
 
-        return datetime(
-            int(m.group(1)),
-            int(m.group(2)),
-            1
-        )
-
-    return datetime.min
-
+    return datetime(year, month_map[month], 1)
 from datetime import datetime
 
 def main(start_date=None, end_date=None):
